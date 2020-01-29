@@ -111,6 +111,16 @@ class CPU:
                 print(self.register[registerA])
                 self.pc += 2
 
+            # MUL - Multiply
+            if instruction == 0b10100010:
+                a = self.register[registerA]
+                b = self.register[registerB]
+                # multiply = a * b
+                print(a*b)
+                # registerA = multiply
+                # print(registerA)
+                self.pc += 3
+
     def ram_read(self, address):
         """Accepts an address to read,
         and return the value stored there."""
