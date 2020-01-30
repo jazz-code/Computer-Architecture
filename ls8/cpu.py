@@ -20,21 +20,38 @@ class CPU:
 
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010, # LDI R0,8
+        #     0b00000000,
+        #     0b00001000,
+        #     0b01000111, # PRN R0
+        #     0b00000000,
+        #     0b00000001, # HLT
+        # ]
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+        # for instruction in program:
+        #     self.ram[address] = instruction
+        #     address += 1
 
+        # arg[1] = ls8.py
+        progname = sys.argv[1]
 
+        with open(progname) as f:
+            for line in f:
+                line = line.split("#")[0]
+                line = line.strip() # strip whitespace
+
+                if line == '':
+                    continue
+                val = int(line, 2)
+                # print(val)
+
+                # index/store into memory(array) (address/location/pointer)
+                self.ram[address] = val
+                # self.ram[]
+                address += 1
+        # sys.exit(0)
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
@@ -72,26 +89,37 @@ class CPU:
 
         while running:
             IR = self.pc
-            program = self.ram_read(self.pc)
+            instruction = self.ram_read(self.pc)
             registerA = self.ram_read(self.pc + 1)
             registerB = self.ram_read(self.pc + 2)
             # Execute instructions in memory
 
             # HLT - Halts running
-            if program == 0b00000001:
+            if instruction == 0b00000001:
                 running = False
+                sys.exit(1)
 
             # LDI - sets value of register to INT
-            if program == 0b10000010:
+            if instruction == 0b10000010:
                 # convert to int, base 2
-                registerInt = int(str(registerA), 2)
-                self.register[registerInt] = registerB
+                # registerInt = int(registerA, 2)
+                self.register[registerA] = registerB
                 self.pc += 3
 
             # PRN - Print numeric value stored in register
-            if program == 0b01000111:
-                print(self.register[int(str(registerA))])
+            if instruction == 0b01000111:
+                print(self.register[registerA])
                 self.pc += 2
+
+            # MUL - Multiply
+            if instruction == 0b10100010:
+                a = self.register[registerA]
+                b = self.register[registerB]
+                # multiply = a * b
+                print(a*b)
+                # registerA = multiply
+                # print(registerA)
+                self.pc += 3
 
     def ram_read(self, address):
         """Accepts an address to read,
@@ -105,3 +133,20 @@ class CPU:
         """Accepts a value to write,
         and the address to write it to."""
         self.ram[address] = value
+
+
+# operand_count = instruction_value >> 6
+# instruction_length = operand_count + 1 (+1 to count the opcode (instruction))
+# pc += instruction_length
+
+#      v
+#   10110011
+# & 00010000 AND MASK
+# ----------
+#   00010000
+#      ^
+
+#     v
+# 00001000 >> 4
+# 00000001
+#        ^
