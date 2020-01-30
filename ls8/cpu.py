@@ -12,6 +12,7 @@ class CPU:
         self.ram = [0] * 255
         # Program Counter, address of the currently executing instruction
         self.pc = 0
+        self.SP = 7
 
     def load(self):
         """Load a program into memory."""
@@ -100,19 +101,19 @@ class CPU:
                 sys.exit(1)
 
             # LDI - sets value of register to INT
-            if instruction == 0b10000010:
+            elif instruction == 0b10000010:
                 # convert to int, base 2
                 # registerInt = int(registerA, 2)
                 self.register[registerA] = registerB
                 self.pc += 3
 
             # PRN - Print numeric value stored in register
-            if instruction == 0b01000111:
+            elif instruction == 0b01000111:
                 print(self.register[registerA])
                 self.pc += 2
 
             # MUL - Multiply
-            if instruction == 0b10100010:
+            elif instruction == 0b10100010:
                 a = self.register[registerA]
                 b = self.register[registerB]
                 # multiply = a * b
@@ -120,6 +121,17 @@ class CPU:
                 # registerA = multiply
                 # print(registerA)
                 self.pc += 3
+
+            # PUSH
+            elif instruction == 0b01000101:
+                self.SP -=1
+                self.ram[self.SP] = self.register[registerA]
+                self.pc += 2
+            # POP
+            elif instruction == 0b01000111:
+                self.register[self.ram[registerA]] = self.ram[self.SP]
+                self.sp += 1
+                self.pc += 2
 
     def ram_read(self, address):
         """Accepts an address to read,
