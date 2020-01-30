@@ -13,6 +13,7 @@ class CPU:
         # Program Counter, address of the currently executing instruction
         self.pc = 0
         self.SP = 7
+        # self.register[self.SP] = 0xf4
 
     def load(self):
         """Load a program into memory."""
@@ -102,6 +103,7 @@ class CPU:
 
             # LDI - sets value of register to INT
             elif instruction == 0b10000010:
+                print("LDI")
                 # convert to int, base 2
                 # registerInt = int(registerA, 2)
                 self.register[registerA] = registerB
@@ -114,25 +116,42 @@ class CPU:
 
             # MUL - Multiply
             elif instruction == 0b10100010:
-                a = self.register[registerA]
-                b = self.register[registerB]
-                # multiply = a * b
-                print(a*b)
-                # registerA = multiply
-                # print(registerA)
+                reg_a = self.ram[self.pc + 1]
+                reg_b = self.ram[self.pc + 2]
+                self.register[reg_a] *= self.register[reg_b]
                 self.pc += 3
 
             # PUSH
             elif instruction == 0b01000101:
-                self.SP -=1
-                self.ram[self.SP] = self.register[registerA]
+                print("PUSH")
+                # self.ram[self.register[self.SP]] = self.register[registerA]
+                # self.pc += 2
+                reg = self.ram[self.pc + 1]
+                val = self.register[reg]
+                # Decrement the SP.
+                self.register[self.SP] -= 1
+                # Copy the value in the given register to the address pointed to by self.SP.
+                self.ram[self.register[self.SP]] = val
+                # Increment self.pc by 2
                 self.pc += 2
+                # print(self.ram)
             # POP
-            elif instruction == 0b01000111:
-                self.register[self.ram[registerA]] = self.ram[self.SP]
-                self.sp += 1
+            elif instruction == 0b01000110:
+                # self.register[self.ram[registerA]] = self.ram[self.register[self.SP]]
+                # self.register[self.SP] += 1
+                # self.pc += 2
+                print("POP")
+                reg = self.ram[self.pc + 1]
+                # Copy the value from the address pointed to by SP to the given register.
+                val = self.ram[self.register[self.SP]]
+                self.register[reg] = val
+                # Increment self.SP.
+                self.register[self.SP] += 1
+                # Increment PC by 2
                 self.pc += 2
-
+            else:
+                print(f"Error: Unknown command: {instruction}")
+                sys.exit(1)
     def ram_read(self, address):
         """Accepts an address to read,
         and return the value stored there."""
