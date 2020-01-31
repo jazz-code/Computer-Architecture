@@ -103,7 +103,7 @@ class CPU:
 
             # LDI - sets value of register to INT
             elif instruction == 0b10000010:
-                # print("LDI")
+                print("LDI")
                 # convert to int, base 2
                 # registerInt = int(register_a, 2)
                 self.register[register_a] = register_b
@@ -158,7 +158,7 @@ class CPU:
                     self.FL[7] = 1
                     self.FL[6] = 0
                     self.FL[5] = 0
-                    # print("CMP = Equal!")
+                    print("CMP = Equal!")
                     self.pc += 3
             # If register_a is less than register_b, set the Less-than L flag to 1, 
             # otherwise set it to 0.
@@ -166,7 +166,7 @@ class CPU:
                     self.FL[7] = 0
                     self.FL[6] = 1
                     self.FL[5] = 0
-                    # print("CMP = Less than!")
+                    print("CMP = Less than!")
                     self.pc += 3
             # If register_a is greater than register_b, set the Greater-than G flag to 1, 
             # otherwise set it to 0.
@@ -180,30 +180,31 @@ class CPU:
                     print("Error")
             #JEQ - If equal flag is set (true), jump to the address stored in the given register.
             elif instruction == 0b01010101:
-                # print("JEQ")
+                print("JEQ")
                 # print(self.FL)
                 if self.FL[7] == 1:
                     # print("Equal!")
-                    self.register[register_a]
-                    self.pc += 2
+                    # self.register[register_a]
+                    self.pc = self.register[register_a]
                 else:
-                    # print("JEQ - Not Equal")
+                    print("JEQ - Not Equal")
                     self.pc += 2
             #JNE - If E flag is clear (false, 0), jump to the address stored in the given register.
             elif instruction == 0b01010110:
                 if self.FL[7] == 0:
-                    # print("JNE - Not Equal!")
-                    # print(self.register)
-                    self.register[register_a]
-                    self.pc += 2
+                    print(self.FL)
+                    print("JNE - Not Equal!")
+                    # print(self.register[register_a])
+                    self.pc = self.register[register_a]
+                    # print(self.pc)
                 else:
-                    # print("JNE = Equal!")
+                    print("JNE = Equal!")
                     self.pc += 2
             #JMP - Jump to the address stored in the given register.
             elif instruction == 0b01010100:
-                # print("JMP")
+                print("JMP")
                 # self.register[register_a]
-                self.pc += self.register[register_a]
+                self.pc = self.register[register_a]
             else:
                 print(f"Error: Unknown command: {instruction}")
                 sys.exit(1)
