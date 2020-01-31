@@ -92,8 +92,8 @@ class CPU:
         while running:
             IR = self.pc
             instruction = self.ram_read(self.pc)
-            registerA = self.ram_read(self.pc + 1)
-            registerB = self.ram_read(self.pc + 2)
+            register_a = self.ram_read(self.pc + 1)
+            register_b = self.ram_read(self.pc + 2)
             # Execute instructions in memory
 
             # HLT - Halts running
@@ -105,13 +105,13 @@ class CPU:
             elif instruction == 0b10000010:
                 print("LDI")
                 # convert to int, base 2
-                # registerInt = int(registerA, 2)
-                self.register[registerA] = registerB
+                # registerInt = int(register_a, 2)
+                self.register[register_a] = register_b
                 self.pc += 3
 
             # PRN - Print numeric value stored in register
             elif instruction == 0b01000111:
-                print(self.register[registerA])
+                print(self.register[register_a])
                 self.pc += 2
 
             # MUL - Multiply
@@ -124,7 +124,7 @@ class CPU:
             # PUSH
             elif instruction == 0b01000101:
                 print("PUSH")
-                # self.ram[self.register[self.SP]] = self.register[registerA]
+                # self.ram[self.register[self.SP]] = self.register[register_a]
                 # self.pc += 2
                 reg = self.ram[self.pc + 1]
                 val = self.register[reg]
@@ -137,7 +137,7 @@ class CPU:
                 # print(self.ram)
             # POP
             elif instruction == 0b01000110:
-                # self.register[self.ram[registerA]] = self.ram[self.register[self.SP]]
+                # self.register[self.ram[register_a]] = self.ram[self.register[self.SP]]
                 # self.register[self.SP] += 1
                 # self.pc += 2
                 print("POP")
@@ -152,35 +152,53 @@ class CPU:
 
             # CMP regA regB - Compare the values in two registers.
             elif instruction == 0b10100111:
-                self.register[registerA] == self.register[registerB]
+                self.register[register_a] == self.register[register_b]
             # If they are equal, set the Equal E flag to 1, otherwise set it to 0.
-                if self.register[registerA] == self.register[registerB]:
+                if self.register[register_a] == self.register[register_b]:
                     self.FL[7] = 1
                     self.FL[6] = 0
                     self.FL[5] = 0
                     print("CMP = Equal!")
                     self.pc += 3
-            # If registerA is less than registerB, set the Less-than L flag to 1, 
+            # If register_a is less than register_b, set the Less-than L flag to 1, 
             # otherwise set it to 0.
-                elif self.register[registerA] < self.register[registerB]:
+                elif self.register[register_a] < self.register[register_b]:
                     self.FL[7] = 0
                     self.FL[6] = 1
                     self.FL[5] = 0
                     print("CMP = Less than!")
                     self.pc += 3
-            # If registerA is greater than registerB, set the Greater-than G flag to 1, 
+            # If register_a is greater than register_b, set the Greater-than G flag to 1, 
             # otherwise set it to 0.
-                elif self.register[registerA] > self.register[registerB]:
+                elif self.register[register_a] > self.register[register_b]:
                     self.FL[7] = 0
                     self.FL[6] = 0
                     self.FL[5] = 1
                     print("CMP = Greater than!")
                     self.pc += 3
-                    # else:
-                    #     self.FL[7] = 0
                 else:
                     print("Error")
-
+            #JEQ - If equal flag is set (true), jump to the address stored in the given register.
+            elif instruction == 0b01010101:
+                print("JEQ")
+                # print(self.FL)
+                if self.FL[7] == 1:
+                    print("Equal!")
+                    self.register[register_a]
+                    self.pc += 2
+                else:
+                    print("JEQ - Not Equal")
+                    self.pc += 2
+            #JNE - If E flag is clear (false, 0), jump to the address stored in the given register.
+            elif instruction == 0b01010110:
+                if self.FL[7] == 0:
+                    print("JNE - Not Equal!")
+                    # print(self.register)
+                    self.register[register_a]
+                    self.pc += 2
+                else:
+                    print("JNE = Equal!")
+                    self.pc += 2
             else:
                 print(f"Error: Unknown command: {instruction}")
                 sys.exit(1)
