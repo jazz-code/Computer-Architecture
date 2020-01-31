@@ -14,7 +14,7 @@ class CPU:
         self.pc = 0
         self.SP = 7
         # self.register[self.SP] = 0xf4
-
+        self.FL = [0] * 8
     def load(self):
         """Load a program into memory."""
 
@@ -149,6 +149,38 @@ class CPU:
                 self.register[self.SP] += 1
                 # Increment PC by 2
                 self.pc += 2
+
+            # CMP regA regB - Compare the values in two registers.
+            elif instruction == 0b10100111:
+                self.register[registerA] == self.register[registerB]
+            # If they are equal, set the Equal E flag to 1, otherwise set it to 0.
+                if self.register[registerA] == self.register[registerB]:
+                    self.FL[7] = 1
+                    self.FL[6] = 0
+                    self.FL[5] = 0
+                    print("CMP = Equal!")
+                    self.pc += 3
+            # If registerA is less than registerB, set the Less-than L flag to 1, 
+            # otherwise set it to 0.
+                elif self.register[registerA] < self.register[registerB]:
+                    self.FL[7] = 0
+                    self.FL[6] = 1
+                    self.FL[5] = 0
+                    print("CMP = Less than!")
+                    self.pc += 3
+            # If registerA is greater than registerB, set the Greater-than G flag to 1, 
+            # otherwise set it to 0.
+                elif self.register[registerA] > self.register[registerB]:
+                    self.FL[7] = 0
+                    self.FL[6] = 0
+                    self.FL[5] = 1
+                    print("CMP = Greater than!")
+                    self.pc += 3
+                    # else:
+                    #     self.FL[7] = 0
+                else:
+                    print("Error")
+
             else:
                 print(f"Error: Unknown command: {instruction}")
                 sys.exit(1)
