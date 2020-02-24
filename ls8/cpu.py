@@ -7,7 +7,11 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        # 256 bytes of memory
+        self.register = [0] * 8
+        self.ram = [0] * 255
+        # Program Counter. the address we are currently executing
+        self.pc = 0
 
     def load(self):
         """Load a program into memory."""
