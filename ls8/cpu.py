@@ -34,7 +34,14 @@ class CPU:
             self.ram[address] = instruction
             address += 1
 
-
+    def ram_read(self, address):
+        """Accepts an address to read,
+        and return the value stored there."""
+        return self.ram[address]
+    def ram_write(self, address, value):
+        """Accepts a value to write,
+        and the address to write it to."""
+        self.ram[address] = value
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
