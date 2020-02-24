@@ -56,7 +56,11 @@ class CPU:
         # sys.exit(0)
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
-
+# Add the ALU operations: AND OR XOR NOT SHL SHR MOD
+        if op == "AND":
+            reg_a = self.ram[self.pc + 1]
+            reg_b = self.ram[self.pc + 2]
+            self.register[reg_a] = reg_a & reg_b
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
@@ -103,7 +107,7 @@ class CPU:
 
             # LDI - sets value of register to INT
             elif instruction == 0b10000010:
-                print("LDI")
+                # print("LDI")
                 # convert to int, base 2
                 # registerInt = int(register_a, 2)
                 self.register[register_a] = register_b
@@ -158,7 +162,7 @@ class CPU:
                     self.FL[7] = 1
                     self.FL[6] = 0
                     self.FL[5] = 0
-                    print("CMP = Equal!")
+                    # print("CMP = Equal!")
                     self.pc += 3
             # If register_a is less than register_b, set the Less-than L flag to 1, 
             # otherwise set it to 0.
@@ -166,7 +170,7 @@ class CPU:
                     self.FL[7] = 0
                     self.FL[6] = 1
                     self.FL[5] = 0
-                    print("CMP = Less than!")
+                    # print("CMP = Less than!")
                     self.pc += 3
             # If register_a is greater than register_b, set the Greater-than G flag to 1, 
             # otherwise set it to 0.
@@ -174,37 +178,67 @@ class CPU:
                     self.FL[7] = 0
                     self.FL[6] = 0
                     self.FL[5] = 1
-                    print("CMP = Greater than!")
+                    # print("CMP = Greater than!")
                     self.pc += 3
                 else:
                     print("Error")
             #JEQ - If equal flag is set (true), jump to the address stored in the given register.
             elif instruction == 0b01010101:
-                print("JEQ")
+                # print("JEQ")
                 # print(self.FL)
                 if self.FL[7] == 1:
                     # print("Equal!")
                     # self.register[register_a]
                     self.pc = self.register[register_a]
                 else:
-                    print("JEQ - Not Equal")
+                    # print("JEQ - Not Equal")
                     self.pc += 2
             #JNE - If E flag is clear (false, 0), jump to the address stored in the given register.
             elif instruction == 0b01010110:
                 if self.FL[7] == 0:
-                    print(self.FL)
-                    print("JNE - Not Equal!")
+                    # print(self.FL)
+                    # print("JNE - Not Equal!")
                     # print(self.register[register_a])
                     self.pc = self.register[register_a]
                     # print(self.pc)
                 else:
-                    print("JNE = Equal!")
+                    # print("JNE = Equal!")
                     self.pc += 2
             #JMP - Jump to the address stored in the given register.
             elif instruction == 0b01010100:
-                print("JMP")
+                # print("JMP")
                 # self.register[register_a]
                 self.pc = self.register[register_a]
+            
+            #PRA - Print alpha char value stored in the register
+            elif instruction == 0b1001000:
+                print(chr(self.register[register_a]))
+                self.pc += 2
+            
+            # AND - Bitwise-AND the values in registerA and registerB, 
+            # then store the result in registerA.
+            elif instruction == 0b10101000:
+            # AND registerA registerB
+                # print("AND")
+                reg_a = self.ram[self.pc + 1]
+                reg_b = self.ram[self.pc + 2]
+                self.register[reg_a] &= self.register[reg_b]
+                self.pc += 3
+            # XOR
+            elif instruction == 0b10101011:
+                # print("XOR")
+                reg_a = self.ram[self.pc + 1]
+                reg_b = self.ram[self.pc + 2]
+                # if self.register[register_a] and self.register[register_b] is 0:
+                #     self.register[register_a] = 0
+                # else:
+                #     self.register[register_a] = 1
+                # self.pc += 3
+
+                # xor = reg_a ^ reg_b
+                # self.register[xor]
+                self.register[reg_a] ^= self.register[reg_b]
+                self.pc += 3
             else:
                 print(f"Error: Unknown command: {instruction}")
                 sys.exit(1)
