@@ -73,4 +73,30 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        # Memory address that's stored in register PC
+
+        # running = True
+
+        while True:
+            IR = self.pc
+            instruction = self.ram_read(self.pc)
+            register_a = self.ram_read(self.pc + 1)
+            register_b = self.ram_read(self.pc + 2)
+            # Execute instructions in memory
+
+            # HLT - Halts running
+            if instruction == 0b00000001:
+                running = False
+                sys.exit(1)
+
+            # LDI - sets value of register to INT
+            elif instruction == 0b10000010:
+                print("LDI")
+                # convert to int, base 2
+                self.register[register_a] = register_b
+                self.pc += 3
+
+            # PRN - Print numeric value stored in register
+            elif instruction == 0b01000111:
+                print(self.register[register_a])
+                self.pc += 2
