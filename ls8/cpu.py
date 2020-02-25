@@ -117,3 +117,7 @@ class CPU:
             elif instruction == 0b01000111:
                 print(self.register[register_a])
                 self.pc += 2
+
+            elif instruction == 0b10100010:
+                self.register[register_a] *= self.register[register_b]
+                self.pc += 3
