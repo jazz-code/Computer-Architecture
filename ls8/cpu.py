@@ -12,7 +12,7 @@ class CPU:
         self.ram = [0] * 255
         # Program Counter. the address we are currently executing
         self.pc = 0
-
+        self.SP = 7
     def load(self):
         """Load a program into memory."""
 
@@ -121,3 +121,25 @@ class CPU:
             elif instruction == 0b10100010:
                 self.register[register_a] *= self.register[register_b]
                 self.pc += 3
+            # PUSH
+            elif instruction == 0b01000101:
+                # print("PUSH")
+                reg = self.ram[self.pc + 1]
+                val = self.register[reg]
+                # Decrement the SP.
+                self.register[self.SP] -= 1
+                # Copy the value in the given register to the address pointed to by self.SP.
+                self.ram[self.register[self.SP]] = val
+                # Increment self.pc by 2
+                self.pc += 2
+            # POP
+            elif instruction == 0b01000110:
+                # print("POP")
+                reg = self.ram[self.pc + 1]
+                # Copy the value from the address pointed to by SP to the given register.
+                val = self.ram[self.register[self.SP]]
+                self.register[reg] = val
+                # Increment self.SP.
+                self.register[self.SP] += 1
+                # Increment PC by 2
+                self.pc += 2
