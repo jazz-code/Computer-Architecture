@@ -1,7 +1,7 @@
 """CPU functionality."""
 
 import sys
-
+# print(sys.argv[0])
 class CPU:
     """Main CPU class."""
 
@@ -10,17 +10,32 @@ class CPU:
         # 256 bytes of memory
         self.register = [0] * 8
         self.ram = [0] * 255
-        # Program Counter, address of the currently executing instruction
+        # Program Counter. the address we are currently executing
         self.pc = 0
         self.SP = 7
-        # self.register[self.SP] = 0xf4
-        self.FL = [0] * 8
     def load(self):
         """Load a program into memory."""
 
         address = 0
 
-        # For now, we've just hardcoded a program:
+        program = sys.argv[1]
+
+        with open(program) as f:
+            for line in f:
+                line = line.split("#")[0]
+                line = line.strip()
+
+                if line == '':
+                    continue
+                val = int(line, 2)
+
+                # self.ram_write(address + 1, val)
+                self.ram[address] = val
+
+                address += 1
+
+
+        # # For now, we've just hardcoded a program:
 
         # program = [
         #     # From print8.ls8
@@ -36,31 +51,17 @@ class CPU:
         #     self.ram[address] = instruction
         #     address += 1
 
-        # arg[1] = ls8.py
-        progname = sys.argv[1]
-
-        with open(progname) as f:
-            for line in f:
-                line = line.split("#")[0]
-                line = line.strip() # strip whitespace
-
-                if line == '':
-                    continue
-                val = int(line, 2)
-                # print(val)
-
-                # index/store into memory(array) (address/location/pointer)
-                self.ram[address] = val
-                # self.ram[]
-                address += 1
-        # sys.exit(0)
+    def ram_read(self, address):
+        """Accepts an address to read,
+        and return the value stored there."""
+        return self.ram[address]
+    def ram_write(self, address, value):
+        """Accepts a value to write,
+        and the address to write it to."""
+        self.ram[address] = value
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
-# Add the ALU operations: AND OR XOR NOT SHL SHR MOD
-        if op == "AND":
-            reg_a = self.ram[self.pc + 1]
-            reg_b = self.ram[self.pc + 2]
-            self.register[reg_a] = reg_a & reg_b
+
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
@@ -91,13 +92,13 @@ class CPU:
         """Run the CPU."""
         # Memory address that's stored in register PC
 
-        running = True
-
-        while running:
+        # running = True
+        while True:
             IR = self.pc
             instruction = self.ram_read(self.pc)
             register_a = self.ram_read(self.pc + 1)
             register_b = self.ram_read(self.pc + 2)
+            address = 0
             # Execute instructions in memory
 
             # HLT - Halts running
@@ -188,7 +189,6 @@ class CPU:
                 # print(self.FL)
                 if self.FL[7] == 1:
                     # print("Equal!")
-                    # self.register[register_a]
                     self.pc = self.register[register_a]
                 else:
                     # print("JEQ - Not Equal")
@@ -196,9 +196,6 @@ class CPU:
             #JNE - If E flag is clear (false, 0), jump to the address stored in the given register.
             elif instruction == 0b01010110:
                 if self.FL[7] == 0:
-                    # print(self.FL)
-                    # print("JNE - Not Equal!")
-                    # print(self.register[register_a])
                     self.pc = self.register[register_a]
                     # print(self.pc)
                 else:
@@ -229,45 +226,8 @@ class CPU:
                 # print("XOR")
                 reg_a = self.ram[self.pc + 1]
                 reg_b = self.ram[self.pc + 2]
-                # if self.register[register_a] and self.register[register_b] is 0:
-                #     self.register[register_a] = 0
-                # else:
-                #     self.register[register_a] = 1
-                # self.pc += 3
-
-                # xor = reg_a ^ reg_b
-                # self.register[xor]
                 self.register[reg_a] ^= self.register[reg_b]
                 self.pc += 3
             else:
                 print(f"Error: Unknown command: {instruction}")
                 sys.exit(1)
-    def ram_read(self, address):
-        """Accepts an address to read,
-        and return the value stored there."""
-        # if address in ram:
-        return self.ram[address]
-        # else:
-        #     raise Exception("Address does not exist!")
-
-    def ram_write(self, address, value):
-        """Accepts a value to write,
-        and the address to write it to."""
-        self.ram[address] = value
-
-
-# operand_count = instruction_value >> 6
-# instruction_length = operand_count + 1 (+1 to count the opcode (instruction))
-# pc += instruction_length
-
-#      v
-#   10110011
-# & 00010000 AND MASK
-# ----------
-#   00010000
-#      ^
-
-#     v
-# 00001000 >> 4
-# 00000001
-#        ^
