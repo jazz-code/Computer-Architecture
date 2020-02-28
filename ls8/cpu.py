@@ -13,14 +13,14 @@ class CPU:
         # Program Counter. the address we are currently executing
         self.pc = 0
         self.SP = 7
-    def load(self):
+    def load(self, file_name):
         """Load a program into memory."""
 
         address = 0
 
-        program = sys.argv[1]
+        # program = sys.argv[1]
 
-        with open(program) as f:
+        with open(file_name) as f:
             for line in f:
                 line = line.split("#")[0]
                 line = line.strip()
@@ -29,27 +29,9 @@ class CPU:
                     continue
                 val = int(line, 2)
 
-                # self.ram_write(address + 1, val)
                 self.ram[address] = val
 
                 address += 1
-
-
-        # # For now, we've just hardcoded a program:
-
-        # program = [
-        #     # From print8.ls8
-        #     0b10000010, # LDI R0,8
-        #     0b00000000,
-        #     0b00001000,
-        #     0b01000111, # PRN R0
-        #     0b00000000,
-        #     0b00000001, # HLT
-        # ]
-
-        # for instruction in program:
-        #     self.ram[address] = instruction
-        #     address += 1
 
     def ram_read(self, address):
         """Accepts an address to read,
@@ -98,7 +80,7 @@ class CPU:
             instruction = self.ram_read(self.pc)
             register_a = self.ram_read(self.pc + 1)
             register_b = self.ram_read(self.pc + 2)
-            address = 0
+            value = 0
             # Execute instructions in memory
 
             # HLT - Halts running
@@ -108,7 +90,7 @@ class CPU:
 
             # LDI - sets value of register to INT
             elif instruction == 0b10000010:
-                # print("LDI")
+                print("LDI")
                 # convert to int, base 2
                 # registerInt = int(register_a, 2)
                 self.register[register_a] = register_b
@@ -142,9 +124,6 @@ class CPU:
                 # print(self.ram)
             # POP
             elif instruction == 0b01000110:
-                # self.register[self.ram[register_a]] = self.ram[self.register[self.SP]]
-                # self.register[self.SP] += 1
-                # self.pc += 2
                 print("POP")
                 reg = self.ram[self.pc + 1]
                 # Copy the value from the address pointed to by SP to the given register.
@@ -154,7 +133,18 @@ class CPU:
                 self.register[self.SP] += 1
                 # Increment PC by 2
                 self.pc += 2
-
+            # CALL
+            elif instruction == 0b01010000:
+                print("CALL")
+                self.SP -= 1
+                self.ram[self.SP] = self.pc + 2
+                self.PC = self.register[self.pc + 1]
+            # RET
+            elif instruction == 0b00010001:
+                print("RET")
+                value = self.ram_read(self.SP)
+                self.SP += 1
+                print(value)
             # CMP regA regB - Compare the values in two registers.
             elif instruction == 0b10100111:
                 self.register[register_a] == self.register[register_b]
