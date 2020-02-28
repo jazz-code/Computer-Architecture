@@ -96,7 +96,6 @@ class CPU:
             elif instruction == 0b10000010:
                 print("LDI")
                 # convert to int, base 2
-                # registerInt = int(register_a, 2)
                 self.register[register_a] = register_b
                 self.pc += 3
 
@@ -112,11 +111,8 @@ class CPU:
                 self.pc += 2
             # MUL - Multiply
             elif instruction == 0b10100010:
-                reg_a = self.ram[self.pc + 1]
-                reg_b = self.ram[self.pc + 2]
-                self.register[reg_a] *= self.register[reg_b]
+                self.register[register_a] *= self.register[register_b]
                 self.pc += 3
-
             # PUSH
             elif instruction == 0b01000101:
                 print("PUSH")
@@ -128,7 +124,6 @@ class CPU:
                 self.ram[self.register[self.SP]] = val
                 # Increment self.pc by 2
                 self.pc += 2
-                # print(self.ram)
             # POP
             elif instruction == 0b01000110:
                 print("POP")
