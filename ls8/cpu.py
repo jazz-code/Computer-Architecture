@@ -12,15 +12,19 @@ class CPU:
         self.ram = [0] * 255
         # Program Counter. the address we are currently executing
         self.pc = 0
+        # Stack Pointer
         self.SP = 7
-    def load(self, file_name):
+    def load(self):
         """Load a program into memory."""
+        if len(sys.argv) != 2:
+            print("usage: ls8.py filename")
+            sys.exit(1)
 
         address = 0
 
-        # program = sys.argv[1]
+        program = sys.argv[1]
 
-        with open(file_name) as f:
+        with open(program) as f:
             for line in f:
                 line = line.split("#")[0]
                 line = line.strip()
@@ -100,7 +104,12 @@ class CPU:
             elif instruction == 0b01000111:
                 print(self.register[register_a])
                 self.pc += 2
-
+            # ADD
+            elif instruction == 0b10100000:
+                reg_a = self.ram[self.pc + 1]
+                reg_b = self.ram[self.pc + 2]
+                self.register[reg_a] += self.register[reg_b]
+                self.pc += 2
             # MUL - Multiply
             elif instruction == 0b10100010:
                 reg_a = self.ram[self.pc + 1]
@@ -111,8 +120,6 @@ class CPU:
             # PUSH
             elif instruction == 0b01000101:
                 print("PUSH")
-                # self.ram[self.register[self.SP]] = self.register[register_a]
-                # self.pc += 2
                 reg = self.ram[self.pc + 1]
                 val = self.register[reg]
                 # Decrement the SP.
@@ -136,15 +143,19 @@ class CPU:
             # CALL
             elif instruction == 0b01010000:
                 print("CALL")
-                self.SP -= 1
-                self.ram[self.SP] = self.pc + 2
-                self.PC = self.register[self.pc + 1]
+                self.register[self.SP] -= 1
+                # The PC is set to the address stored in the given register
+                self.ram_write(self.register[self.SP], self.pc + 2)
+                # We jump to that location in RAM and execute the first instruction in the subroutine.
+                # The PC can move forward or backwards from its current location.
+                reg = self.ram_read(self.pc+1)
+                self.pc = self.register[reg]
+                print(self.register)
             # RET
             elif instruction == 0b00010001:
                 print("RET")
-                value = self.ram_read(self.SP)
-                self.SP += 1
-                print(value)
+                self.pc = self.ram_read(self.register[self.SP])
+                self.register[self.SP] += 1
             # CMP regA regB - Compare the values in two registers.
             elif instruction == 0b10100111:
                 self.register[register_a] == self.register[register_b]
@@ -155,7 +166,7 @@ class CPU:
                     self.FL[5] = 0
                     # print("CMP = Equal!")
                     self.pc += 3
-            # If register_a is less than register_b, set the Less-than L flag to 1, 
+            # If register_a is less than register_b, set the Less-than L flag to 1,
             # otherwise set it to 0.
                 elif self.register[register_a] < self.register[register_b]:
                     self.FL[7] = 0
@@ -163,7 +174,7 @@ class CPU:
                     self.FL[5] = 0
                     # print("CMP = Less than!")
                     self.pc += 3
-            # If register_a is greater than register_b, set the Greater-than G flag to 1, 
+            # If register_a is greater than register_b, set the Greater-than G flag to 1,
             # otherwise set it to 0.
                 elif self.register[register_a] > self.register[register_b]:
                     self.FL[7] = 0
@@ -196,13 +207,13 @@ class CPU:
                 # print("JMP")
                 # self.register[register_a]
                 self.pc = self.register[register_a]
-            
+
             #PRA - Print alpha char value stored in the register
             elif instruction == 0b1001000:
                 print(chr(self.register[register_a]))
                 self.pc += 2
-            
-            # AND - Bitwise-AND the values in registerA and registerB, 
+
+            # AND - Bitwise-AND the values in registerA and registerB,
             # then store the result in registerA.
             elif instruction == 0b10101000:
             # AND registerA registerB
