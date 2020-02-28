@@ -14,6 +14,7 @@ class CPU:
         self.pc = 0
         # Stack Pointer
         self.SP = 7
+        self.FL = [0] * 8
     def load(self):
         """Load a program into memory."""
         if len(sys.argv) != 2:
@@ -94,7 +95,7 @@ class CPU:
 
             # LDI - sets value of register to INT
             elif instruction == 0b10000010:
-                print("LDI")
+                # print("LDI")
                 # convert to int, base 2
                 self.register[register_a] = register_b
                 self.pc += 3
